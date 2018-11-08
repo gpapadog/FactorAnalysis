@@ -235,3 +235,10 @@ for (ii in 1 : p) {
   }
 }
 
+
+par(mfrow = dim(lambdas_short)[c(2, 3)], mar = rep(1, 4))
+for (l in 1 : p) {
+  for (k in 1 : K) {
+    plot(density(lambdas_short[, l, k]), main = '', xlim = range(lambdas_short))
+  }
+}

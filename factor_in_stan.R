@@ -6,14 +6,16 @@ setwd('~/Github/FactorAnalysis/')
 
 set.seed(1234)
 
-sample_size <- 100
-p <- 10
+sample_size <- 500
+p <- 6
 true_lambda <- matrix(rnorm(2 * p), ncol = 2)
 true_sigma0 <- diag(MCMCpack::rinvgamma(p, shape = 300, scale = 100))
 true_sigma <- true_lambda %*% t(true_lambda) + true_sigma0
 
 Y <- t(mvnfast::rmvn(sample_size, mu = rep(0, p), sigma = true_sigma))
 
+
+# ---------- PRIOR SPECIFICATION --------- # 
 
 nu <- 3  # nu parameter in the prior for the phis.
 prior_a1 <- c(1, 2)  # alpha, beta parameters in the Gamma prior for a1.
@@ -45,6 +47,12 @@ for (ss in 1 : keep_Nsims) {
   variances[, , ss] <- all_pars$Lambda[ss, , ] %*% t(all_pars$Lambda[ss, , ])
   variances[, , ss] <- variances[, , ss] + diag(all_pars$sigma_sq[ss, ])
 }
-
+par(mfrow = dim(variances)[c(1, 2)], mar = rep(0, 4))
+for (ii in 1 : p) {
+  for (jj in 1 : p) {
+    plot(density(variances[ii, jj, ]), axes = FALSE, main = '')
+    abline(v = true_sigma[ii, jj], col = 'red')
+  }
+}
 
 hist(apply(variances, c(1, 2), mean) - true_sigma)
